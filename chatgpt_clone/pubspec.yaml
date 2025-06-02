@@ -21,6 +21,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  bloc_test: ^9.1.0 # Added BLoC testing utility
+  mocktail: ^1.0.0 # Added mocking utility (using 1.0.0 as a common recent version)
+  sqflite_common_ffi: ^2.3.0 # For in-memory DB testing
+
 
 flutter:
   uses-material-design: true
