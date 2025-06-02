@@ -142,7 +142,7 @@ class DatabaseHelper {
       return ChatMessageModel.fromMap(maps[i]);
     });
   }
-  
+
   Future<int> deleteMessage(String messageId) async {
     Database db = await instance.database;
     return await db.delete(
@@ -162,7 +162,7 @@ class DatabaseHelper {
       whereArgs: [message.id],
     );
   }
-  
+
   // Optional: Clear all data (for development/testing or user request)
   Future<void> clearAllData() async {
     Database db = await instance.database;

@@ -22,7 +22,7 @@ void main() {
 
   setUpAll(() {
     // Fallback for ChatCompletionRequest if used with any()
-    registerFallbackValue(ChatCompletionRequest(model: '', messages: [])); 
+    registerFallbackValue(ChatCompletionRequest(model: '', messages: []));
   });
 
   setUp(() {
@@ -33,7 +33,7 @@ void main() {
     // Default stub for auth service
     when(() => mockAuthService.getCurrentUser())
         .thenAnswer((_) async => UserModel(id: 'test_user', email: 'test@example.com', accessToken: 'test_api_key'));
-    
+
     // Also stub getApiKey directly as it's called by sendChatCompletion
     when(() => mockAuthService.getApiKey()) // Assuming AuthService has getApiKey or similar
         .thenAnswer((_) async => 'test_api_key');
@@ -73,7 +73,7 @@ void main() {
       verify(() => mockHttpClient.post(
         Uri.parse(ApiConstants.openAIBaseUrl + ApiConstants.chatCompletionsEndpoint),
         headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer test_api_key'},
-        body: any(named: 'body'), 
+        body: any(named: 'body'),
       )).called(1);
     });
 
@@ -88,7 +88,7 @@ void main() {
       );
       verifyNever(() => mockHttpClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')));
     });
-    
+
     test('throws ApiException on API error (e.g., 401 Unauthorized)', () async {
       final errorPayload = {"error": {"message": "Incorrect API key provided.", "type": "invalid_request_error"}};
       when(() => mockHttpClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
@@ -106,7 +106,7 @@ void main() {
     test('throws ApiException on general HTTP error (e.g., 500)', () async {
       when(() => mockHttpClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
           .thenAnswer((_) async => http.Response('Server Error', 500, headers: {'content-type': 'text/plain; charset=utf-8'}));
-      
+
       expect(
         () => apiService.sendChatCompletion(tUserMessages),
         throwsA(isA<ApiException>()
@@ -114,7 +114,7 @@ void main() {
           .having((e) => e.message, 'message', startsWith('API request failed with status 500')))
       );
     });
-    
+
     test('throws ApiException if API returns no choices', () async {
        final mockResponsePayload = {
         "id": "chatcmpl-test123", "object": "chat.completion", "created": 1677652288, "model": ApiConstants.defaultChatModel,
@@ -134,7 +134,7 @@ void main() {
     test('throws ApiException on network or other client error', () async {
       when(() => mockHttpClient.post(any(), headers: any(named: 'headers'), body: any(named: 'body')))
           .thenThrow(Exception('Network error'));
-      
+
       expect(
         () => apiService.sendChatCompletion(tUserMessages),
         throwsA(isA<ApiException>().having((e) => e.message, 'message', 'Failed to connect to OpenAI API: Exception: Network error'))

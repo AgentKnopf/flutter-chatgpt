@@ -16,7 +16,7 @@ class AuthService {
     // 3. Redirect URI provides an authorization code.
     // 4. Exchange authorization code for an access token and refresh token.
     // For this conceptual version, we'll simulate success if an API key is provided.
-    
+
     if (apiKey.isNotEmpty) {
       // Simulate fetching user info after successful token exchange
       final user = UserModel(

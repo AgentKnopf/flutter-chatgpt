@@ -24,7 +24,7 @@ void main() {
   final tUserMessage = ChatMessageModel(id: 'user1', conversationId: tConversationId, text: 'Hello', sender: MessageSender.user, timestamp: DateTime.now());
   final tAiResponseMessage = ChatMessageModel(id: 'ai1', conversationId: tConversationId, text: 'Hi there!', sender: MessageSender.ai, timestamp: DateTime.now().add(const Duration(seconds: 1)));
   final tSystemErrorMessage = ChatMessageModel(id: 'sys1', conversationId: tConversationId, text: 'Error: API Failure', sender: MessageSender.system, timestamp: DateTime.now().add(const Duration(seconds: 2)));
-  
+
   final tInitialConversation = Conversation(id: tConversationId, title: "Test Chat", createdAt: DateTime.now(), updatedAt: DateTime.now());
 
   setUpAll(() {
@@ -108,7 +108,7 @@ void main() {
         when(() => mockDatabaseHelper.getMessagesForConversation(tConversationId))
             .thenAnswer((_) async => capturedMessages);
     });
-    
+
     tearDown(() {
         capturedMessages.clear();
     });
@@ -123,7 +123,7 @@ void main() {
       act: (bloc) => bloc.add(const SendMessage(text: tUserText)),
       expect: () => [
         // State after user message is added locally
-        isA<ChatState>() 
+        isA<ChatState>()
           .having((s) => s.status, 'status', ChatStatus.sendingMessage)
           .having((s) => s.messages.length, 'messages.length', 1)
           .having((s) => s.messages.last.text, 'messages.last.text', tUserText)
@@ -171,7 +171,7 @@ void main() {
       }
     );
   });
-  
+
   group('RegenerateResponse', () {
     final userMessage1 = ChatMessageModel(id: 'u1', conversationId: tConversationId, text: 'First user msg', sender: MessageSender.user, timestamp: DateTime.now());
     final aiMessageToRegen = ChatMessageModel(id: 'ai_old', conversationId: tConversationId, text: 'Old AI response', sender: MessageSender.ai, timestamp: DateTime.now().add(Duration(seconds:1)));
@@ -185,7 +185,7 @@ void main() {
           // Verify that the history sent to API does not contain aiMessageToRegen
           return history.length == 1 && history.first.id == userMessage1.id;
         })))).thenAnswer((_) async => newAiMessage);
-        
+
         when(() => mockDatabaseHelper.insertMessage(any(that: predicate<ChatMessageModel>((m) => m.text == newAiMessage.text))))
             .thenAnswer((_) async => 1);
       },
@@ -200,7 +200,7 @@ void main() {
         verify(() => mockDatabaseHelper.insertMessage(any(that: predicate<ChatMessageModel>((m) => m.text == newAiMessage.text)))).called(1);
       }
     );
-    
+
     blocTest<ChatBloc, ChatState>(
       'emits [sendingMessage, error with system message] on API failure during regeneration',
       seed: () => ChatState(conversationId: tConversationId, messages: [userMessage1, aiMessageToRegen], status: ChatStatus.messagesLoaded),
@@ -218,7 +218,7 @@ void main() {
           .having((s) => s.status, 'status', ChatStatus.error)
           .having((s) => s.errorMessage, 'errorMessage', startsWith('ApiException: Regen API Error'))
           // Original messages + new system error message
-          .having((s) => s.messages.length, 'messages.length', 3) 
+          .having((s) => s.messages.length, 'messages.length', 3)
           .having((s) => s.messages.last.sender, 'messages.last.sender', MessageSender.system)
           .having((s) => s.messages.last.text, 'messages.last.text', startsWith('ApiException: Regen API Error')),
       ],

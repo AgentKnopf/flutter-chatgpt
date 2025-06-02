@@ -48,13 +48,13 @@ class ConversationListBloc extends Bloc<ConversationListEvent, ConversationListS
       );
       await _databaseHelper.insertConversation(newConversation);
       // Reload all conversations to reflect the new one
-      add(LoadConversations()); 
+      add(LoadConversations());
     } catch (e) {
       emit(state.copyWith(
           status: ConversationListStatus.failure, errorMessage: e.toString()));
     }
   }
-  
+
   Future<void> _onCreateNewConversationAndSelect(
     CreateNewConversationAndSelect event, Emitter<ConversationListState> emit) async {
     emit(state.copyWith(status: ConversationListStatus.loading, clearSelectedConversationId: true));
@@ -72,7 +72,7 @@ class ConversationListBloc extends Bloc<ConversationListEvent, ConversationListS
         updatedAt: DateTime.now(),
       );
       await _databaseHelper.insertConversation(newConversation);
-      
+
       final conversations = await _databaseHelper.getAllConversations();
       emit(state.copyWith(
         status: ConversationListStatus.success,
@@ -97,7 +97,7 @@ class ConversationListBloc extends Bloc<ConversationListEvent, ConversationListS
           status: ConversationListStatus.failure, errorMessage: e.toString()));
     }
   }
-  
+
   Future<void> _onUpdateConversationTitle(
       UpdateConversationTitle event, Emitter<ConversationListState> emit) async {
     // No loading state change, happens in background

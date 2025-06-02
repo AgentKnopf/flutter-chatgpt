@@ -52,7 +52,7 @@ void main() {
     expect(messageSent, isFalse);
     expect(sentMessage, isNull);
     // TextField should still contain the spaces (or be empty if controller clears it regardless)
-    expect(find.widgetWithText(TextField, '   '), findsOneWidget); 
+    expect(find.widgetWithText(TextField, '   '), findsOneWidget);
   });
    testWidgets('MessageInputField sends message on text input submit action', (WidgetTester tester) async {
     String? sentMessage;

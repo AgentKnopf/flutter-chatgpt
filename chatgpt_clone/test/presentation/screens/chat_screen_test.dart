@@ -32,7 +32,7 @@ void main() {
       ),
     );
   }
-  
+
   final userMessage = ChatMessageModel(id: 'm1', conversationId: tConversationId, text: 'User says hi', sender: MessageSender.user, timestamp: DateTime.now());
   final aiMessage = ChatMessageModel(id: 'm2', conversationId: tConversationId, text: 'AI says hello', sender: MessageSender.ai, timestamp: DateTime.now());
 
@@ -71,10 +71,10 @@ void main() {
     const testMsg = 'New message from input';
     await tester.enterText(find.byType(TextField), testMsg);
     await tester.tap(find.byIcon(Icons.send));
-    
+
     verify(() => mockChatBloc.add(const SendMessage(text: testMsg))).called(1);
   });
-  
+
   testWidgets('AppBar title displays conversation title from ChatBloc state', (WidgetTester tester) async {
     when(() => mockChatBloc.state).thenReturn(
       ChatState(conversationId: tConversationId, status: ChatStatus.messagesLoaded, currentConversation: tConversation)
@@ -82,7 +82,7 @@ void main() {
     await tester.pumpWidget(createChatScreen());
     expect(find.widgetWithText(AppBar, 'Test Chat'), findsOneWidget);
   });
-  
+
   testWidgets('Shows refresh icon and dispatches RegenerateResponse when applicable', (WidgetTester tester) async {
     when(() => mockChatBloc.state).thenReturn(
       ChatState(conversationId: tConversationId, status: ChatStatus.messagesLoaded, messages: [aiMessage], currentConversation: tConversation) // Ensure an AI message exists

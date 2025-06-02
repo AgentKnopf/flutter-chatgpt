@@ -47,7 +47,7 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     final authService = RepositoryProvider.of<AuthService>(context);
     await authService.signOut();
-    
+
     // After signing out, navigate to LoginScreen and remove all previous routes.
     // This is a simple way to reset the app state for now.
     // A more robust solution might involve an AuthBloc that MyApp listens to.

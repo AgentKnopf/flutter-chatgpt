@@ -65,7 +65,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       await _databaseHelper.insertMessage(userMessage);
       // The OpenAIApiService needs the full history
       final conversationHistory = await _databaseHelper.getMessagesForConversation(state.conversationId);
-      
+
       final aiResponseModel = await _apiService.sendChatCompletion(conversationHistory);
       add(_ReceiveMessage(message: aiResponseModel)); // Trigger internal event
 
@@ -76,23 +76,23 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       add(_ReportError(errorMessage: 'An unexpected error occurred: ${e.toString()}'));
     }
   }
-  
+
   Future<void> _onRegenerateResponse(RegenerateResponse event, Emitter<ChatState> emit) async {
     emit(state.copyWith(status: ChatStatus.sendingMessage, clearError: true));
     try {
       // Get messages, remove last AI response if it exists and was an error or normal response
       var history = List<ChatMessageModel>.from(state.messages);
       if (history.isNotEmpty && (history.last.sender == MessageSender.ai || history.last.sender == MessageSender.system)) {
-        // For now, just remove the last message if it's AI/System. 
+        // For now, just remove the last message if it's AI/System.
         // More sophisticated logic might be needed for specific error messages.
-        history.removeLast(); 
+        history.removeLast();
       }
       // Ensure we don't send an empty history if the only message was an AI one we removed.
       if (history.isEmpty) {
         emit(state.copyWith(status: ChatStatus.messagesLoaded, errorMessage: "Cannot regenerate from an empty history."));
         return;
       }
-      
+
       final aiResponseModel = await _apiService.sendChatCompletion(history);
       add(_ReceiveMessage(message: aiResponseModel));
 
@@ -117,7 +117,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       status: ChatStatus.messagesLoaded,
     ));
   }
-  
+
   Future<void> _onReportError(_ReportError event, Emitter<ChatState> emit) async {
     // You could also add the error as a system message to the chat list
     final errorMessage = ChatMessageModel(
@@ -129,7 +129,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
     await _databaseHelper.insertMessage(errorMessage); // Persist error message in chat
     emit(state.copyWith(
-      status: ChatStatus.error, 
+      status: ChatStatus.error,
       errorMessage: event.errorMessage,
       messages: List.from(state.messages)..add(errorMessage)
     ));

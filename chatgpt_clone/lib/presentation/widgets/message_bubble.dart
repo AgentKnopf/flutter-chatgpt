@@ -1,7 +1,7 @@
 // In chatgpt_clone/lib/presentation/widgets/message_bubble.dart
 import 'package:flutter/material.dart';
 
-enum MessageBubbleSender { user, ai } 
+enum MessageBubbleSender { user, ai }
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -64,7 +64,7 @@ class MessageBubble extends StatelessWidget {
               ),
             ),
             // If you want button after bubble for user (not typical for regenerate)
-            // if (isUser && showRegenerateButton && onRegenerate != null) ... 
+            // if (isUser && showRegenerateButton && onRegenerate != null) ...
           ],
         ),
       ],

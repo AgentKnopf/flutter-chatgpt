@@ -34,10 +34,10 @@ void main() {
     // To make Uuid mockable for testing ID generation, it would need to be injected.
     // The current tests for CreateNewConversationAndSelect work around this.
     conversationListBloc = ConversationListBloc(databaseHelper: mockDatabaseHelper);
-    
+
     // This mockUuid instance is not used by the BLoC itself, but can be used in test setups
     // if we needed to predict an ID for verification purposes (e.g., if Uuid was injected).
-    when(() => mockUuid.v4()).thenReturn('new_conv_id_from_mock'); 
+    when(() => mockUuid.v4()).thenReturn('new_conv_id_from_mock');
   });
 
   tearDown(() {
@@ -100,7 +100,7 @@ void main() {
     // We test the interaction and the resulting state based on successful DB operations.
     const tInitialMessage = "Hello there";
     final tExpectedTitle = (tInitialMessage.length > 30 ? tInitialMessage.substring(0, 30) : tInitialMessage) + '...';
-    
+
     // A conversation object that would be returned by getAllConversations after insert.
     // The ID is unknown here as it's generated inside the Bloc.
     final tNewlyCreatedConversation = Conversation(id: 'some_generated_id', title: tExpectedTitle, createdAt: DateTime.now(), updatedAt: DateTime.now());
@@ -110,14 +110,14 @@ void main() {
       'emits [loading, success with new conv] and calls DB insert/getAll',
       setUp: () {
         when(() => mockDatabaseHelper.insertConversation(any(that: isA<Conversation>())))
-            .thenAnswer((_) async => 1); 
+            .thenAnswer((_) async => 1);
         when(() => mockDatabaseHelper.getAllConversations())
             .thenAnswer((_) async => [
               // Simulate the newly created conversation is now part of the list
               // For a robust test, we'd need to ensure this matches what was inserted,
               // but without ID prediction, we simulate a successful fetch.
-              tNewlyCreatedConversation, 
-              ...tConversationsList 
+              tNewlyCreatedConversation,
+              ...tConversationsList
             ]);
       },
       build: () => conversationListBloc,
@@ -126,7 +126,7 @@ void main() {
         const ConversationListState(status: ConversationListStatus.loading, clearSelectedConversationId: true),
         isA<ConversationListState>()
           .having((state) => state.status, 'status', ConversationListStatus.success)
-          .having((state) => state.selectedConversationIdOnCreation, 'selectedConversationIdOnCreation', isNotNull) 
+          .having((state) => state.selectedConversationIdOnCreation, 'selectedConversationIdOnCreation', isNotNull)
           .having((state) => state.conversations.length, 'conversations length', tConversationsList.length + 1)
           .having((state) => state.conversations.first.title, 'first conversation title', tExpectedTitle) // Assuming new conv is first
       ],
@@ -138,7 +138,7 @@ void main() {
         verify(() => mockDatabaseHelper.getAllConversations()).called(1);
       }
     );
-    
+
     blocTest<ConversationListBloc, ConversationListState>(
       'emits [loading, failure] if DB insert throws',
       setUp: () {
@@ -153,22 +153,22 @@ void main() {
       ],
     );
   });
-  
+
   group('DeleteConversation', () {
     const tConversationIdToDelete = '1';
     blocTest<ConversationListBloc, ConversationListState>(
       'emits [loading, success with updated list] after deleting',
       setUp: () {
         when(() => mockDatabaseHelper.deleteConversation(tConversationIdToDelete))
-            .thenAnswer((_) async => 1); 
+            .thenAnswer((_) async => 1);
         when(() => mockDatabaseHelper.getAllConversations())
             .thenAnswer((_) async => [tConversation2]); // tConversation1 is deleted
       },
       build: () => conversationListBloc,
       act: (bloc) => bloc.add(const DeleteConversation(conversationId: tConversationIdToDelete)),
       expect: () => [
-        const ConversationListState(status: ConversationListStatus.loading), 
-        const ConversationListState(status: ConversationListStatus.loading), 
+        const ConversationListState(status: ConversationListStatus.loading),
+        const ConversationListState(status: ConversationListStatus.loading),
         ConversationListState(status: ConversationListStatus.success, conversations: [tConversation2]),
       ],
        verify: (_) {
@@ -176,7 +176,7 @@ void main() {
         verify(() => mockDatabaseHelper.getAllConversations()).called(1);
       }
     );
-    
+
     blocTest<ConversationListBloc, ConversationListState>(
       'emits [loading, failure] if DB delete throws',
       setUp: () {
@@ -211,12 +211,12 @@ void main() {
             .thenAnswer((_) async => 1);
         when(() => mockDatabaseHelper.getAllConversations())
             // Simulate the list containing the updated conversation
-            .thenAnswer((_) async => [tUpdatedConversationAfterDb, tConversation2]); 
+            .thenAnswer((_) async => [tUpdatedConversationAfterDb, tConversation2]);
       },
       build: () => conversationListBloc,
       act: (bloc) => bloc.add(const UpdateConversationTitle(conversationId: tConversationIdToUpdate, newTitle: tNewTitle)),
       expect: () => [
-        const ConversationListState(status: ConversationListStatus.loading), 
+        const ConversationListState(status: ConversationListStatus.loading),
         ConversationListState(status: ConversationListStatus.success, conversations: [tUpdatedConversationAfterDb, tConversation2]),
       ],
       verify: (_) {
@@ -227,7 +227,7 @@ void main() {
         verify(() => mockDatabaseHelper.getAllConversations()).called(1);
       }
     );
-    
+
     blocTest<ConversationListBloc, ConversationListState>(
       'emits [failure] if conversation to update is not found',
       setUp: () {

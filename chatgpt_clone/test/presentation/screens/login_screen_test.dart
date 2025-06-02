@@ -43,7 +43,7 @@ void main() {
     // The AuthService interaction is mocked if LoginScreen directly calls it.
     // Current LoginScreen uses its own _apiKeyController and calls print/ScaffoldMessenger.
     // If it were calling authService.signInWithOpenAI directly, we'd verify that.
-    
+
     // For current LoginScreen that uses its own controller and shows a SnackBar:
     await tester.tap(find.widgetWithText(ElevatedButton, 'Simulate Login / Continue'));
     await tester.pump(); // For SnackBar animation

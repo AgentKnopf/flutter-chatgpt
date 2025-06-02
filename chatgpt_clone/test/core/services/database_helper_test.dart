@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 void main() {
   // Initialize FFI
   sqfliteFfiInit();
-  
+
   // Use an in-memory database for testing
   databaseFactory = databaseFactoryFfi;
 
@@ -23,11 +23,11 @@ void main() {
     // A common approach for testing singletons that manage a DB is to have a method to close and delete the DB.
     // For this test suite, we'll rely on clearing data or unique conversation IDs per test.
     // A better way for testing would be to make DatabaseHelper not a singleton or allow db name injection.
-    dbHelper = DatabaseHelper.instance; 
-    
+    dbHelper = DatabaseHelper.instance;
+
     // Ensure the database is clean before each test
     // This is crucial if the db instance is shared across tests (due to singleton)
-    await dbHelper.clearAllData(); 
+    await dbHelper.clearAllData();
   });
 
   tearDownAll(() async {
@@ -40,7 +40,7 @@ void main() {
     test('insertConversation and getConversation', () async {
       final convId = uuid.v4();
       final conversation = Conversation(id: convId, title: 'Test Conv', createdAt: DateTime.now(), updatedAt: DateTime.now());
-      
+
       await dbHelper.insertConversation(conversation);
       final retrieved = await dbHelper.getConversation(convId);
 
@@ -53,7 +53,7 @@ void main() {
       final now = DateTime.now();
       final conv1 = Conversation(id: uuid.v4(), title: 'Conv 1', createdAt: now, updatedAt: now); // older
       final conv2 = Conversation(id: uuid.v4(), title: 'Conv 2', createdAt: now, updatedAt: now.add(const Duration(hours: 1))); // newer
-      
+
       await dbHelper.insertConversation(conv1);
       await dbHelper.insertConversation(conv2);
 
@@ -78,7 +78,7 @@ void main() {
         createdAt: originalTime, // createdAt should not change
         updatedAt: newUpdateTime,
       );
-      
+
       await dbHelper.updateConversation(updatedConversationData);
       final retrieved = await dbHelper.getConversation(convId);
 
@@ -114,7 +114,7 @@ void main() {
     test('insertMessage and getMessagesForConversation', () async {
       final msg1 = ChatMessageModel(id: uuid.v4(), conversationId: testConvId, text: 'Msg 1', sender: MessageSender.user, timestamp: DateTime.now());
       final msg2 = ChatMessageModel(id: uuid.v4(), conversationId: testConvId, text: 'Msg 2', sender: MessageSender.ai, timestamp: DateTime.now().add(const Duration(seconds: 1)));
-      
+
       await dbHelper.insertMessage(msg1);
       await dbHelper.insertMessage(msg2);
 
@@ -127,7 +127,7 @@ void main() {
     test('insertMessage updates parent conversation updatedAt timestamp', () async {
       final conversation = await dbHelper.getConversation(testConvId);
       final originalUpdatedAt = conversation!.updatedAt;
-      
+
       await Future.delayed(const Duration(milliseconds: 50)); // Ensure time difference
 
       final newMessage = ChatMessageModel(id: uuid.v4(), conversationId: testConvId, text: 'New message', sender: MessageSender.user, timestamp: DateTime.now());
@@ -136,7 +136,7 @@ void main() {
       final updatedConversation = await dbHelper.getConversation(testConvId);
       expect(updatedConversation!.updatedAt.isAfter(originalUpdatedAt), isTrue);
     });
-    
+
     test('deleteMessage removes a specific message', () async {
       final msgIdToDelete = uuid.v4();
       final msg1 = ChatMessageModel(id: msgIdToDelete, conversationId: testConvId, text: 'To delete', sender: MessageSender.user, timestamp: DateTime.now());
@@ -194,7 +194,7 @@ void main() {
 
       final conversations = await dbHelper.getAllConversations();
       final messagesConv1 = await dbHelper.getMessagesForConversation(convId1);
-      
+
       expect(conversations.isEmpty, isTrue);
       expect(messagesConv1.isEmpty, isTrue);
   });

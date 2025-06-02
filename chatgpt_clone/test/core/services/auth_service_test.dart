@@ -23,8 +23,8 @@ void main() {
 
     test('signInWithOpenAI stores user details in SharedPreferences and returns UserModel', () async {
       // Prepare SharedPreferences mock values
-      SharedPreferences.setMockInitialValues({}); 
-      
+      SharedPreferences.setMockInitialValues({});
+
       final user = await authService.signInWithOpenAI(testApiKey);
 
       expect(user, isNotNull);
@@ -64,7 +64,7 @@ void main() {
       final user = await authService.getCurrentUser();
       expect(user, isNull);
     });
-    
+
     test('getCurrentUser returns null if session is incomplete', () async {
       SharedPreferences.setMockInitialValues({
         'openai_access_token': testApiKey,

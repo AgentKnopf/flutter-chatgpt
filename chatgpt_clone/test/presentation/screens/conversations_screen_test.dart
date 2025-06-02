@@ -72,7 +72,7 @@ void main() {
     expect(find.textContaining('Error loading conversations: DB Error'), findsOneWidget);
     expect(find.widgetWithText(ElevatedButton, 'Retry'), findsOneWidget);
   });
-  
+
   testWidgets('Shows "No conversations yet" when status is success and conversations are empty', (WidgetTester tester) async {
     when(() => mockConversationListBloc.state).thenReturn(
       const ConversationListState(status: ConversationListStatus.success, conversations: [])
@@ -101,7 +101,7 @@ void main() {
     await tester.tap(find.byType(FloatingActionButton));
     verify(() => mockConversationListBloc.add(const CreateNewConversationAndSelect())).called(1);
   });
-  
+
   testWidgets('Tapping "Start New Chat" button dispatches CreateNewConversationAndSelect event', (WidgetTester tester) async {
     when(() => mockConversationListBloc.state).thenReturn(
       const ConversationListState(status: ConversationListStatus.success, conversations: [])
@@ -119,12 +119,12 @@ void main() {
       ConversationListState(status: ConversationListStatus.success, conversations: conversations)
     );
     await tester.pumpWidget(createConversationsScreen());
-    
+
     // Stub the ChatBloc creation dependencies if navigation is attempted
     // This part is tricky as ChatScreen itself is not directly part of this widget test's scope for deep interaction.
     // The navigation pushes a new route with a new BLoC.
     // We're testing ConversationsScreen, not the full navigation flow here.
-    
+
     await tester.tap(find.widgetWithText(ListTile, 'Chat 1'));
     await tester.pumpAndSettle(); // Allow navigation to process
 
@@ -135,7 +135,7 @@ void main() {
     // For now, this test ensures no crash on tap.
     // To truly test the BlocProvider in navigation, one might need a test helper for navigation.
   });
-  
+
   testWidgets('Tapping delete on a conversation shows confirmation dialog and dispatches event on confirm', (WidgetTester tester) async {
     final conversations = [tConversation1];
     when(() => mockConversationListBloc.state).thenReturn(

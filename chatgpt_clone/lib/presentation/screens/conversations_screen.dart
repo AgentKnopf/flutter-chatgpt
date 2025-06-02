@@ -6,9 +6,9 @@ import '../../core/models/conversation_model.dart';
 import 'chat_screen.dart'; // To navigate to ChatScreen
 import 'settings_screen.dart'; // Import SettingsScreen
 import '../../bloc/chat/chat_bloc.dart'; // For ChatBloc provision
-import '../../core/services/openai_api_service.dart'; 
-import '../../core/services/database_helper.dart';   
-import '../../core/services/auth_service.dart'; 
+import '../../core/services/openai_api_service.dart';
+import '../../core/services/database_helper.dart';
+import '../../core/services/auth_service.dart';
 
 
 class ConversationsScreen extends StatefulWidget {
@@ -32,13 +32,16 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         builder: (_) => BlocProvider<ChatBloc>(
           create: (context) => ChatBloc(
             conversationId: conversationId,
-            databaseHelper: RepositoryProvider.of<DatabaseHelper>(context), 
+            // Assuming these services are available via context.read from a MultiRepositoryProvider in main.dart
+            databaseHelper: RepositoryProvider.of<DatabaseHelper>(context),
             apiService: RepositoryProvider.of<OpenAIApiService>(context),
-          )..add(LoadChat(conversationId: conversationId)),
+          )..add(LoadChat(conversationId: conversationId)), // Initial load event
           child: ChatScreen(conversationId: conversationId),
         ),
       ),
     ).then((_) {
+      // When returning from ChatScreen, refresh conversations list
+      // as a conversation's title or updatedAt might have changed.
       context.read<ConversationListBloc>().add(LoadConversations());
     });
   }
@@ -67,7 +70,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 if (titleController.text.trim().isNotEmpty) {
                   Navigator.of(dialogContext).pop(titleController.text.trim());
                 }
-                // Optionally, show a small error if the title is empty, or disable Rename button.
               },
             ),
           ],
@@ -76,7 +78,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
     );
 
     if (newTitle != null && newTitle.isNotEmpty && newTitle != conversation.title) {
-      // Use context.read here as it's in response to an event, not during build
       context.read<ConversationListBloc>().add(
         UpdateConversationTitle(conversationId: conversation.id, newTitle: newTitle)
       );
@@ -117,8 +118,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         title: const Text('flutter_gpt Conversations'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings_outlined), // Changed icon
-            tooltip: 'Settings', // Added tooltip
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'Settings',
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -139,7 +140,6 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           }
         },
         builder: (context, state) {
-          // ... (loading, error, empty states remain the same) ...
           if (state.status == ConversationListStatus.loading && state.conversations.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -148,7 +148,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Error loading conversations: ${state.errorMessage ?? "Unknown error"}'), // Added null check
+                  Text('Error loading conversations: ${state.errorMessage ?? "Unknown error"}'),
                   ElevatedButton(
                     onPressed: () => context.read<ConversationListBloc>().add(LoadConversations()),
                     child: const Text('Retry'),
@@ -183,7 +183,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                 title: Text(conversation.title),
                 subtitle: Text('Updated: ${conversation.updatedAt.toLocal().toString().substring(0, 16)}'),
                 trailing: Row(
-                  mainAxisSize: MainAxisSize.min, // Important for Row within ListTile trailing
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, color: Colors.blueAccent),
