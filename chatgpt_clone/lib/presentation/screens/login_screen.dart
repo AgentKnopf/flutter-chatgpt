@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-// import '../../core/services/auth_service.dart'; // Will be used later with BLoC
+import 'package:chatgpt_clone/core/services/auth_service.dart';
+import 'package:chatgpt_clone/core/models/user_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:chatgpt_clone/presentation/screens/conversations_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

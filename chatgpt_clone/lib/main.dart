@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatgpt_clone/bloc/conversation_list/conversation_list_bloc.dart';
 import 'package:chatgpt_clone/core/services/auth_service.dart';
 import 'package:chatgpt_clone/core/services/database_helper.dart';
+import 'package:chatgpt_clone/core/services/in_memory_database_helper.dart';
 import 'package:chatgpt_clone/core/services/openai_api_service.dart';
 import 'package:chatgpt_clone/presentation/screens/conversations_screen.dart';
 import 'package:chatgpt_clone/presentation/screens/login_screen.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // Services are initialized here and passed to AppWrapper or directly to providers
   final authService = AuthService();
-  final databaseHelper = DatabaseHelper.instance;
+  final databaseHelper = getDatabaseHelper();
   final openAIApiService = OpenAIApiService(authService: authService);
 
   runApp(AppWrapper(
@@ -19,6 +21,13 @@ void main() {
     databaseHelper: databaseHelper,
     openAIApiService: openAIApiService,
   ));
+}
+
+/**
+ * Create a DatabaseHelper instance based on the platform.
+ */
+DatabaseHelper getDatabaseHelper() {
+  return kIsWeb ? InMemoryDatabaseHelper() : DatabaseHelper.instance;
 }
 
 // New wrapper widget to host providers above MaterialApp

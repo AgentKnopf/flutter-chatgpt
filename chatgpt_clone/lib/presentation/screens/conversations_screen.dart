@@ -1,14 +1,16 @@
 // In chatgpt_clone/lib/presentation/screens/conversations_screen.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/chat/chat_bloc.dart'; // For ChatBloc provision
 import '../../bloc/conversation_list/conversation_list_bloc.dart';
 import '../../core/models/conversation_model.dart';
+import '../../core/services/database_helper.dart';
+import '../../core/services/in_memory_database_helper.dart';
+import '../../core/services/openai_api_service.dart';
 import 'chat_screen.dart'; // To navigate to ChatScreen
 import 'settings_screen.dart'; // Import SettingsScreen
-import '../../bloc/chat/chat_bloc.dart'; // For ChatBloc provision
-import '../../core/services/openai_api_service.dart'; 
-import '../../core/services/database_helper.dart';   
-import '../../core/services/auth_service.dart'; 
 
 
 class ConversationsScreen extends StatefulWidget {
@@ -27,21 +29,22 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   }
 
   void _navigateToChat(BuildContext context, String conversationId) {
+    final dbHelper = kIsWeb
+        ? InMemoryDatabaseHelper() // You'll need to implement this
+        : RepositoryProvider.of<DatabaseHelper>(context);
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => BlocProvider<ChatBloc>(
           create: (context) => ChatBloc(
             conversationId: conversationId,
-            // Assuming these services are available via context.read from a MultiRepositoryProvider in main.dart
-            databaseHelper: RepositoryProvider.of<DatabaseHelper>(context), 
+            databaseHelper: dbHelper,
             apiService: RepositoryProvider.of<OpenAIApiService>(context),
-          )..add(LoadChat(conversationId: conversationId)), // Initial load event
+          )..add(LoadChat(conversationId: conversationId)),
           child: ChatScreen(conversationId: conversationId),
         ),
       ),
     ).then((_) {
-      // When returning from ChatScreen, refresh conversations list
-      // as a conversation's title or updatedAt might have changed.
       context.read<ConversationListBloc>().add(LoadConversations());
     });
   }

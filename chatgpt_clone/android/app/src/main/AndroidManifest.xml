@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chatgpt_clone"> <!-- Ensure this matches -->
-   <uses-permission android:name="android.permission.INTERNET"/> <!-- Added internet permission -->
+    package="com.example.chatgpt_clone">
+   <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="flutter_gpt" <!-- App name -->
+        android:label="flutter_gpt"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity" <!-- Standard name -->
+            android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
