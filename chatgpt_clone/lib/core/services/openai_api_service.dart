@@ -56,7 +56,7 @@ class OpenAIApiService {
             id: chatResponse.id, // Or generate a new client-side ID
             text: aiMessage.content,
             sender: MessageSender.ai,
-            timestamp: DateTime.now(),
+            timestamp: DateTime.now(), conversationId: 'DUMMY ID', // TODO: Replace with actual conversation ID if available
           );
         } else {
           throw ApiException('No response choices received from API.');
